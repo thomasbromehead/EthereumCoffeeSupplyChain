@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity 0.7.1;
 
 /**
  * @title Roles
@@ -15,7 +15,6 @@ library Roles {
   function add(Role storage role, address account) internal {
     require(account != address(0));
     require(!has(role, account));
-
     role.bearer[account] = true;
   }
 
@@ -23,9 +22,8 @@ library Roles {
    * @dev remove an account's access to this role
    */
   function remove(Role storage role, address account) internal {
-    require(account != address(0));
-    require(has(role, account));
-
+    // require(account != address(0), "You are using address 0");
+    // require(has(role, account), "Caller is not a consumer");
     role.bearer[account] = false;
   }
 
