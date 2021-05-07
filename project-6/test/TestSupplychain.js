@@ -21,7 +21,7 @@ contract('SupplyChain', function(accounts) {
     const distributorID = accounts[2]
     const retailerID = accounts[3]
     const consumerID = accounts[4]
-    const emptyAddress = '0x00000000000000000000000000000000000000'
+    const emptyAddress = '0x0000000000000000000000000000000000000000'
 
     ///Available Accounts
     ///==================
@@ -46,26 +46,31 @@ contract('SupplyChain', function(accounts) {
     // 1st Test
     it("Testing smart contract function harvestItem() that allows a farmer to harvest coffee", async() => {
         const supplyChain = await SupplyChain.deployed()
+        await supplyChain.addFarmer(originFarmerID, {from: ownerID});
+        let isFarmer = await supplyChain.isFarmer(originFarmerID);
+        assert.equal(true, isFarmer);
+    // Mark an item as Harvested by calling function harvestItem()
+        let harvestTx = await supplyChain.harvestItem(
+            upc,
+            originFarmerID, 
+            originFarmName, 
+            originFarmInformation, 
+            originFarmLatitude, 
+            originFarmLongitude, 
+            productNotes,
+            {from: originFarmerID}
+            )
         
-        // Declare and Initialize a variable for event
-        var eventEmitted = false
-        
-        // Watch the emitted event Harvested()
-        var event = supplyChain.Harvested()
-        await event.watch((err, res) => {
-            eventEmitted = true
-        })
-
-        // Mark an item as Harvested by calling function harvestItem()
-        await supplyChain.harvestItem(upc, originFarmerID, originFarmName, originFarmInformation, originFarmLatitude, originFarmLongitude, productNotes)
+        // Test event emitted with truffle-assertions
+        await TruffleAssert.eventEmitted(harvestTx, "Harvested");
 
         // Retrieve the just now saved item from blockchain by calling function fetchItem()
         const resultBufferOne = await supplyChain.fetchItemBufferOne.call(upc)
         const resultBufferTwo = await supplyChain.fetchItemBufferTwo.call(upc)
 
         // Verify the result set
-        assert.equal(resultBufferOne[0], sku, 'Error: Invalid item SKU')
-        assert.equal(resultBufferOne[1], upc, 'Error: Invalid item UPC')
+        assert.equal(resultBufferOne[0].toNumber(), sku, 'Error: Invalid item SKU')
+        assert.equal(resultBufferOne[1].toNumber(), upc, 'Error: Invalid item UPC')
         assert.equal(resultBufferOne[2], originFarmerID, 'Error: Missing or Invalid ownerID')
         assert.equal(resultBufferOne[3], originFarmerID, 'Error: Missing or Invalid originFarmerID')
         assert.equal(resultBufferOne[4], originFarmName, 'Error: Missing or Invalid originFarmName')
@@ -73,30 +78,36 @@ contract('SupplyChain', function(accounts) {
         assert.equal(resultBufferOne[6], originFarmLatitude, 'Error: Missing or Invalid originFarmLatitude')
         assert.equal(resultBufferOne[7], originFarmLongitude, 'Error: Missing or Invalid originFarmLongitude')
         assert.equal(resultBufferTwo[5], 0, 'Error: Invalid item State')
-        assert.equal(eventEmitted, true, 'Invalid event emitted')        
+        assert.equal(resultBufferTwo[6], emptyAddress, 'Error: distributorId should not be set at this stage')
+        assert.equal(resultBufferTwo[7], emptyAddress, 'Error: retailerId should not be set at this stage')
+        assert.equal(resultBufferTwo[8], emptyAddress, 'Error: consumerId should not be set at this stage')
     })    
 
     // 2nd Test
-    it("Testing smart contract function processItem() that allows a farmer to process coffee", async() => {
+    it.only("Testing smart contract function processItem() that allows a farmer to process coffee", async() => {
         const supplyChain = await SupplyChain.deployed()
-        let owner = await supplyChain.owner.call();
-        await TruffleAssert.reverts(supplyChain.shipItem(1, {from: accounts[3]}));
-        // Declare and Initialize a variable for event
-        let isOwner = await supplyChain.isOwner.call({from: accounts[1]});
-        console.log("IS OWNER", isOwner);
-        
-        
+        await supplyChain.addFarmer(originFarmerID, {from: ownerID});
+        // Harvest the item
+        await supplyChain.harvestItem(
+            upc,
+            originFarmerID, 
+            originFarmName, 
+            originFarmInformation, 
+            originFarmLatitude, 
+            originFarmLongitude, 
+            productNotes,
+            {from: originFarmerID}
+            )
+        // Process the item     
+        let processTx = await supplyChain.processItem(upc);
         // Watch the emitted event Processed()
-        await TruffleAssert.eventEmitted("Processed")
-
-        // Mark an item as Processed by calling function processtItem()
-        
-
+        await TruffleAssert.eventEmitted(processTx, "Processed");
         // Retrieve the just now saved item from blockchain by calling function fetchItem()
-        
-
+        const resultBufferTwo = await supplyChain.fetchItemBufferTwo.call(upc);
+        console.log(resultBufferTwo);
         // Verify the result set
-        
+        assert.equal(resultBufferTwo[3], "Coffee beans have been processed");
+        assert.equal(resultBufferTwo[5], 1);
     })    
 
     // 3rd Test
@@ -239,6 +250,10 @@ contract('SupplyChain', function(accounts) {
         // Verify the result set:
         
     })
+
+    it("Should let the owner pause the contract if needed", async () => {
+
+    });
 
 });
 

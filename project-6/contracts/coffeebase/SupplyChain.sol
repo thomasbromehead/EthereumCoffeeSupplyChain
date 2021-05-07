@@ -16,11 +16,13 @@ contract SupplyChain is ConsumerRole, DistributorRole, FarmerRole, RetailerRole,
   // Define a public mapping 'items' that maps the UPC to an Item.
   mapping (uint => Item) items;
 
-  bool internal paused;
-
   // Define a public mapping 'itemsHistory' that maps the UPC to an array of TxHash, 
   // that track its journey through the supply chain -- to be sent from DApp.
   mapping (uint => string[]) itemsHistory;
+
+  enum ContractState {On, Paused}
+
+  ContractState public currentContractState = ContractState.On;
   
   // Define enum 'State' with the following values:
   enum State 
@@ -73,8 +75,8 @@ contract SupplyChain is ConsumerRole, DistributorRole, FarmerRole, RetailerRole,
   //   _;
   // }
 
-  modifier verifyPaused(){
-    require(!paused, "The contract has been paused for security reasons");
+  modifier verifyNotPaused(){
+    require(currentContractState == ContractState.On, "The contract has been paused for security reasons");
     _;
   }
 
@@ -107,43 +109,43 @@ contract SupplyChain is ConsumerRole, DistributorRole, FarmerRole, RetailerRole,
 
   // Define a modifier that checks if an item.state of a upc is Processed
   modifier processed(uint _upc) {
-
+    (items[_upc].itemState == State.Processed);
     _;
   }
   
   // Define a modifier that checks if an item.state of a upc is Packed
   modifier packed(uint _upc) {
-
+    (items[_upc].itemState == State.Packed);
     _;
   }
 
   // Define a modifier that checks if an item.state of a upc is ForSale
   modifier forSale(uint _upc) {
-
+    (items[_upc].itemState == State.ForSale);
     _;
   }
 
   // Define a modifier that checks if an item.state of a upc is Sold
   modifier sold(uint _upc) {
-
+    (items[_upc].itemState == State.Sold);
     _;
   }
   
   // Define a modifier that checks if an item.state of a upc is Shipped
   modifier shipped(uint _upc) {
-
+    (items[_upc].itemState == State.Shipped);
     _;
   }
 
   // Define a modifier that checks if an item.state of a upc is Received
   modifier received(uint _upc) {
-
+    (items[_upc].itemState == State.Received);
     _;
   }
 
   // Define a modifier that checks if an item.state of a upc is Purchased
   modifier purchased(uint _upc) {
-    
+    (items[_upc].itemState == State.Purchased);
     _;
   }
 
@@ -161,6 +163,10 @@ contract SupplyChain is ConsumerRole, DistributorRole, FarmerRole, RetailerRole,
     selfdestruct(payable(thisOwner));
   }
 
+  function getState(uint _upc) public view returns(State) {
+      items[_upc].itemState;
+  }
+
   // Define a function 'harvestItem' that allows a farmer to mark an item 'Harvested'
   function harvestItem(
     uint _upc,
@@ -171,34 +177,61 @@ contract SupplyChain is ConsumerRole, DistributorRole, FarmerRole, RetailerRole,
     string  memory   _originFarmLongitude,
     string   memory  _productNotes) 
     public 
-    verifyPaused()
+    verifyNotPaused()
+    onlyFarmer()
   {
     // Add the new item as part of Harvest
-    
+    Item storage item = items[_upc];
+    if(upc == 1 && sku == 1){
+      // Very first item
+      item.upc = 1;
+    } else {
+      item.upc = sku + upc;
+    }
+    item.sku = sku;
+    item.ownerID = msg.sender;
+    item.originFarmerID = _originFarmerID;
+    item.originFarmName = _originFarmName;
+    item.originFarmInformation = _originFarmInformation;
+    item.originFarmLatitude = _originFarmLatitude;
+    item.originFarmLongitude = _originFarmLongitude;
+    item.productID = sku + upc;
+    item.productNotes = _productNotes;
+    item.itemState = State.Harvested;
     // Increment sku
     sku = sku + 1;
     // Emit the appropriate event
+    emit Harvested(_upc);
   }
 
   function pauseContract() public onlyOwner() returns(bool){
-    paused = !paused;
+    currentContractState = ContractState.Paused;
+    require(currentContractState == ContractState.Paused, "Failed to pause the contract");
+    return true;
   } 
 
+  function restartContract() public onlyOwner() returns(bool){
+    currentContractState = ContractState.On;
+    require(currentContractState == ContractState.On, "Failed to restart the contract");
+    return true;
+  }
+
   // Define a function 'processtItem' that allows a farmer to mark an item 'Processed'
-  function processItem(uint _upc) public verifyPaused()
+  function processItem(uint _upc) public verifyNotPaused()
   // Call modifier to check if upc has passed previous supply chain stage
     harvested(_upc)
   // Call modifier to verify caller of this function
     onlyFarmer()
   {
-    // Update the appropriate fields
-    
+    Item storage item = items[_upc];
+    item.itemState = State.Processed;
+    item.productNotes = "Coffee beans have been processed";    
     // Emit the appropriate event
-    
+    emit Processed(_upc);
   }
 
   // Define a function 'packItem' that allows a farmer to mark an item 'Packed'
-  function packItem(uint _upc) public verifyPaused()
+  function packItem(uint _upc) public verifyNotPaused()
   // Call modifier to check if upc has passed previous supply chain stage
   
   // Call modifier to verify caller of this function
@@ -211,7 +244,7 @@ contract SupplyChain is ConsumerRole, DistributorRole, FarmerRole, RetailerRole,
   }
 
   // Define a function 'sellItem' that allows a farmer to mark an item 'ForSale'
-  function sellItem(uint _upc, uint _price) public verifyPaused()
+  function sellItem(uint _upc, uint _price) public verifyNotPaused()
   // Call modifier to check if upc has passed previous supply chain stage
   
   // Call modifier to verify caller of this function
@@ -226,7 +259,7 @@ contract SupplyChain is ConsumerRole, DistributorRole, FarmerRole, RetailerRole,
   // Define a function 'buyItem' that allows the disributor to mark an item 'Sold'
   // Use the above defined modifiers to check if the item is available for sale, if the buyer has paid enough, 
   // and any excess ether sent is refunded back to the buyer
-  function buyItem(uint _upc) public payable verifyPaused()
+  function buyItem(uint _upc) public payable verifyNotPaused()
     // Call modifier to check if upc has passed previous supply chain stage
     
     // Call modifer to check if buyer has paid enough
@@ -245,7 +278,7 @@ contract SupplyChain is ConsumerRole, DistributorRole, FarmerRole, RetailerRole,
 
   // Define a function 'shipItem' that allows the distributor to mark an item 'Shipped'
   // Use the above modifers to check if the item is sold
-  function shipItem(uint _upc) public verifyPaused()
+  function shipItem(uint _upc) public verifyNotPaused()
     // Call modifier to check if upc has passed previous supply chain stage
     
     // Call modifier to verify caller of this function
@@ -259,7 +292,7 @@ contract SupplyChain is ConsumerRole, DistributorRole, FarmerRole, RetailerRole,
 
   // Define a function 'receiveItem' that allows the retailer to mark an item 'Received'
   // Use the above modifiers to check if the item is shipped
-  function receiveItem(uint _upc) public verifyPaused()
+  function receiveItem(uint _upc) public verifyNotPaused()
     // Call modifier to check if upc has passed previous supply chain stage
     
     // Access Control List enforced by calling Smart Contract / DApp
@@ -272,7 +305,7 @@ contract SupplyChain is ConsumerRole, DistributorRole, FarmerRole, RetailerRole,
 
   // Define a function 'purchaseItem' that allows the consumer to mark an item 'Purchased'
   // Use the above modifiers to check if the item is received
-  function purchaseItem(uint _upc) public verifyPaused()
+  function purchaseItem(uint _upc) public verifyNotPaused()
     // Call modifier to check if upc has passed previous supply chain stage
     
     // Access Control List enforced by calling Smart Contract / DApp
@@ -284,7 +317,7 @@ contract SupplyChain is ConsumerRole, DistributorRole, FarmerRole, RetailerRole,
   }
 
   // Define a function 'fetchItemBufferOne' that fetches the data
-  function fetchItemBufferOne(uint _upc) public view verifyPaused() returns 
+  function fetchItemBufferOne(uint _upc) public view verifyNotPaused() returns 
   (
   uint    itemSKU,
   uint    itemUPC,
@@ -296,24 +329,22 @@ contract SupplyChain is ConsumerRole, DistributorRole, FarmerRole, RetailerRole,
   string  memory originFarmLongitude
   ) 
   {
-  // Assign values to the 8 parameters
-  
-    
+  Item memory item = items[_upc];
   return 
   (
-  itemSKU,
-  itemUPC,
-  ownerID,
-  originFarmerID,
-  originFarmName,
-  originFarmInformation,
-  originFarmLatitude,
-  originFarmLongitude
+  item.sku,
+  item.upc,
+  item.ownerID,
+  item.originFarmerID,
+  item.originFarmName,
+  item.originFarmInformation,
+  item.originFarmLatitude,
+  item.originFarmLongitude
   );
   }
 
   // Define a function 'fetchItemBufferTwo' that fetches the data
-  function fetchItemBufferTwo(uint _upc) public view verifyPaused() returns 
+  function fetchItemBufferTwo(uint _upc) public view verifyNotPaused() returns 
   (
   uint    itemSKU,
   uint    itemUPC,
@@ -326,20 +357,18 @@ contract SupplyChain is ConsumerRole, DistributorRole, FarmerRole, RetailerRole,
   address consumerID
   ) 
   {
-    // Assign values to the 9 parameters
-  
-    
+  Item memory item = items[_upc];
   return 
   (
-  itemSKU,
-  itemUPC,
-  productID,
-  productNotes,
-  productPrice,
-  itemState,
-  distributorID,
-  retailerID,
-  consumerID
+  item.sku,
+  item.upc,
+  item.productID,
+  item.productNotes,
+  item.productPrice,
+  uint(item.itemState),
+  item.distributorID,
+  item.retailerID,
+  item.consumerID
   );
   }
 }
