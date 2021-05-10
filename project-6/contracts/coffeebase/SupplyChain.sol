@@ -149,6 +149,11 @@ contract SupplyChain is ConsumerRole, DistributorRole, FarmerRole, RetailerRole,
     _;
   }
 
+  modifier onlyOriginFarmer(uint _upc) {
+    require(items[_upc].originFarmerID == msg.sender, "Only the origin farmer can change this item's state");
+    _;
+  }
+
   // In the constructor set 'owner' to the address that instantiated the contract
   // and set 'sku' to 1
   // and set 'upc' to 1
@@ -164,7 +169,7 @@ contract SupplyChain is ConsumerRole, DistributorRole, FarmerRole, RetailerRole,
   }
 
   function getState(uint _upc) public view returns(State) {
-      items[_upc].itemState;
+      return items[_upc].itemState;
   }
 
   // Define a function 'harvestItem' that allows a farmer to mark an item 'Harvested'
@@ -222,6 +227,7 @@ contract SupplyChain is ConsumerRole, DistributorRole, FarmerRole, RetailerRole,
     harvested(_upc)
   // Call modifier to verify caller of this function
     onlyFarmer()
+    onlyOriginFarmer(_upc)
   {
     Item storage item = items[_upc];
     item.itemState = State.Processed;
@@ -233,14 +239,17 @@ contract SupplyChain is ConsumerRole, DistributorRole, FarmerRole, RetailerRole,
   // Define a function 'packItem' that allows a farmer to mark an item 'Packed'
   function packItem(uint _upc) public verifyNotPaused()
   // Call modifier to check if upc has passed previous supply chain stage
-  
-  // Call modifier to verify caller of this function
-  
+    processed(_upc)
+    // Call modifier to verify caller of this function
+    onlyFarmer()
+    onlyOriginFarmer(_upc)
   {
+    Item storage item = items[_upc];
     // Update the appropriate fields
-    
+    item.itemState = State.Packed;
+    item.productNotes = string(abi.encodePacked(item.productNotes, "\n Packed on May 10th 2021"));
     // Emit the appropriate event
-    
+    emit Packed(_upc);
   }
 
   // Define a function 'sellItem' that allows a farmer to mark an item 'ForSale'
