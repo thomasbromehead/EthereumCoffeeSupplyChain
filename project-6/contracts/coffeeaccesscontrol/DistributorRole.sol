@@ -8,8 +8,8 @@ contract DistributorRole {
   using Roles for Roles.Role;
 
   // Define 2 events, one for Adding, and other for Removing
-  event DistributorAdded();
-  event DistributorRemoved();
+  event DistributorAdded(address distributorAddress);
+  event DistributorRemoved(address distributorAddress);
 
   // Define a struct 'distributors' by inheriting from 'Roles' library, struct Role
   Roles.Role private distributors;
@@ -20,29 +20,29 @@ contract DistributorRole {
   }
 
   // Define a modifier that checks to see if msg.sender has the appropriate role
-  modifier onlyDistributor(address sender) {
-    require(isDistributor(sender), "Message Sender is not a distributor");
+  modifier onlyDistributor() {
+    require(isDistributor(msg.sender), "Message Sender is not a Distributor");
     _;
   }
 
   // Define a function 'isDistributor' to check this role
   function isDistributor(address account) public view returns (bool) {
-    require(Roles.has(distributors, msg.sender), "Caller is not a Consumer");
+    require(Roles.has(distributors, msg.sender), "Caller is not a Distributor");
     return distributors.bearer[account];
   }
 
   // Define a function 'addDistributor' that adds this role
-  function addDistributor(address account) public onlyDistributor(msg.sender) {
+  function addDistributor(address account) public onlyDistributor() {
     // This will throw
     _addDistributor(account);
-    emit DistributorAdded();
+    emit DistributorAdded(account);
   }
 
   // Define a function 'renounceDistributor' to renounce this role
-  function renounceDistributor(address account) public onlyDistributor(msg.sender) {
+  function renounceDistributor(address account) public onlyDistributor() {
     // This will throw
     _removeDistributor(account);
-    emit DistributorRemoved();
+    emit DistributorRemoved(account);
   }
 
   // Define an internal function '_addDistributor' to add this role, called by 'addDistributor'

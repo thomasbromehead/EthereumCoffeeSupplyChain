@@ -8,8 +8,8 @@ contract ConsumerRole {
   using Roles for Roles.Role;
 
   // Define 2 events, one for Adding, and other for Removing
-  event ConsumerAdded();
-  event ConsumerRemoved();
+  event ConsumerAdded(address account);
+  event ConsumerRemoved(address account);
 
   // Define a struct 'consumers' by inheriting from 'Roles' library, struct Role
   Roles.Role private consumers;
@@ -29,20 +29,20 @@ contract ConsumerRole {
   // Define a function 'isConsumer' to check this role
   function isConsumer(address account) public view returns (bool) {
     require(Roles.has(consumers, msg.sender), "Caller is not a Consumer");
-    return consumers.bearer[account];
+    return consumers.bearer[account ];
   }
 
   // Define a function 'addConsumer' that adds this role
   function addConsumer(address account) public onlyConsumer() {
     // This will throw
     _addConsumer(account);
-    emit ConsumerAdded();
+    emit ConsumerAdded(account);
   }
 
   // Define a function 'renounceConsumer' to renounce this role
   function renounceConsumer(address account) public onlyConsumer() {
     _removeConsumer(account);
-    emit ConsumerRemoved();
+    emit ConsumerRemoved(account);
   }
 
   // Define an internal function '_addConsumer' to add this role, called by 'addConsumer'
