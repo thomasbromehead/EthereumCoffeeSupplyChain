@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fair Trade Coffee</title>
+    <script src="js/require.js"></script>
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="style.css">
 </head>
@@ -17,6 +18,35 @@
     </div>
 
     <div id="ftc-harvest">
+        <div class="form-group">
+            <h2>Manage Roles</h2>
+            <label for="ownerID">Address</label><br>
+            <input type="text" id="ownerID" name="ownerID" value="0x963865f57804b38459dd4b2da2f760211a200438" size="50"><br>
+            <label for="roleOption">Role</label><br>
+            <select id="addressRole" name="roleOption">
+                <option value="Farmer">Farmer</option>
+                <option value="Distributor">Distributor</option>
+                <option value="Retailer">Retailer</option>
+                <option value="Consumer">Consumer</option>
+            </select><br>
+            <div class=button-div>
+                <button class="btn-harvest" id="btn-addRole" type="button" data-id="1">Add Role</button>
+                <button class="btn-harvest" id="btn-renounceRole" type="button" data-id="2">Renounce Role</button>
+            </div>
+        </div>
+        <div class=form-break></div>
+        <div class=form-break></div>
+        <div class="form-group">
+            <h2>Check Roles</h2>
+            <label for="roleAddress">Address</label><br>
+            <input type="text" id="ownerID" name="roleAddress" placeholder="Enter an address" size="50"><br>
+            <button class="btn-harvest" id="btn-isFarmer" type="button">Is Farmer?</button>
+            <button class="btn-harvest" id="btn-isDistributor" type="button-check-isDistributor" data-id="3">Is Distributor?</button>
+            <button class="btn-harvest" id="btn-isRetailer" type="button-check-isRetailer" data-id="4">Is Retailer?</button>
+            <button class="btn-harvest" id="btn-isConsumer" type="button-check-isConsumer" data-id="5">Is Consumer?</button>
+        </div>
+        <div class=form-break></div>
+        <div class=form-break></div>
         <h2>Product Overview</h2>
         <div class="form-group">
             SKU
@@ -29,11 +59,10 @@
             <br>
             <input type="text" id="ownerID" name="ownerID" value="0x963865f57804b38459dd4b2da2f760211a200438" size="50"><br>
             <div class=button-div>
-                <button class="btn-fetchOne" id="button" type="button" data-id="9">Fetch Data 1</button>
-                <button class="btn-fetchTwo" id="button" type="button" data-id="10">Fetch Data 2</button>
+                <button class="btn-fetchOne" onclick="App.fetchItemBufferOne" id="button" type="button" data-id="6">Fetch Data 1</button>
+                <button class="btn-fetchTwo" onclick="App.fetchItemBufferTwo" id="button" type="button" data-id="7">Fetch Data 2</button>
             </div>
         </div>
-        <div class=form-break></div>
         <h2>Farm Details</h2>
         <div class="form-group">
             Farmer ID
@@ -53,10 +82,10 @@
             <br>
             <input type="text" id="originFarmLongitude" name="originFarmLongitude" value="144.341490"><br>
             <br>
-            <button class="btn-harvest" id="button" type="button" data-id="1">Harvest</button>
-            <button class="btn-process" id="button" type="button" data-id="2">Process</button>
-            <button class="btn-pack" id="button" type="button" data-id="3">Pack</button>
-            <button class="btn-forsale" id="button" type="button" data-id="4">ForSale</button>
+            <button class="btn-harvest" onclick="App.harvestItem" id="button" type="button" data-id="8">Harvest</button>
+            <button class="btn-process" onclick="App.processItem" id="button" type="button" data-id="9">Process</button>
+            <button class="btn-pack" onclick="App.packItem" id="button" type="button" data-id="10">Pack</button>
+            <button class="btn-forsale" onclick="App.sellItem" id="button" type="button" data-id="11">ForSale</button>
         </div>
         <div class=form-break></div>
         <h2>Product Details</h2>
@@ -81,11 +110,12 @@
             <input type="text" id="consumerID" name="consumerID" value="0x5d777e9127b28fb119e81a6304278a0a21bef1c4"
                 size="50"><br>
             <br>
-            <button class="btn-buy" id="button" type="button" data-id="5">Buy</button>
-            <button class="btn-ship" id="button" type="button" data-id="6">Ship</button>
-            <button class="btn-receive" id="button" type="button" data-id="7">Receive</button>
-            <button class="btn-purchase" id="button" type="button" data-id="8">Purchase</button>
+            <button class="btn-buy" id="button" type="button" data-id="12">Buy</button>
+            <button class="btn-ship" id="button" type="button" data-id="13">Ship</button>
+            <button class="btn-receive" id="button" type="button" data-id="14">Receive</button>
+            <button class="btn-purchase" id="button" type="button" data-id="15">Purchase</button>
         </div>
+        <div id="ftc-item"></div>   
         <div class=form-break></div>
         <hr>
     </div>
@@ -101,8 +131,8 @@
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <!-- <script src="js/web3.min.js"></script> -->
-    <script src="js/truffle-contract.js"></script>
     <script src="js/app.js"></script>
+    <script src="js/truffle-contract.js"></script>
 </body>
 
 </html>

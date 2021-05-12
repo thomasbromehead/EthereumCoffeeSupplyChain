@@ -74,7 +74,7 @@ contract SupplyChain is ConsumerRole, DistributorRole, FarmerRole, RetailerRole,
   //   (msg.sender == owner);
   //   _;
   // }
-
+  
   modifier verifyNotPaused(){
     require(currentContractState == ContractState.On, "The contract has been paused for security reasons");
     _;

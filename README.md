@@ -1,110 +1,37 @@
-# Supply chain & data auditing
+# UML
+# Libraries
+Truffle assertions: useful for testing reverts and events emitted
+I have docker: true in truffle-config.js, turn that off at will
 
-This repository containts an Ethereum DApp that demonstrates a Supply Chain flow between a Seller and Buyer. The user story is similar to any commonly used supply chain process. A Seller can add items to the inventory system stored in the blockchain. A Buyer can purchase such items from the inventory system. Additionally a Seller can mark an item as Shipped, and similarly a Buyer can mark an item as Received.
+Libraries used by the front-end: ethjs-abi is deprecated.
+https://snyk.io/advisor/npm-package/ethjs-abi
 
-The DApp User Interface when running should look like...
+var ethJSABI = require("ethjs-abi");
+var BlockchainUtils = require("truffle-blockchain-utils");
+var Web3 = require("web3");
+@metamask/detect-provider as per recommendations from Metamask documentation
+I have a 'from' option for the rinkeby deployment config in truffle.js, change that to your own owner's address.
 
-![truffle test](images/ftc_product_overview.png)
+# IPFS
+Contract address: 
+0x64E8F187a76B4441C1f3E8C042C3704ABc853f4F
+Owner: 0x55a9b04F1C75BB95D4fD11857B05F17540396Eaf
 
-![truffle test](images/ftc_farm_details.png)
+Notes to self:
+Contract owner: 0xA95B5bdF5DD35B243457cc40c152a8D7fCA23006
+Farmer: 0xcD4b008789742eb41c0160c07384D8d03fA3A7B4
+Distributor: 0x4F58dfA687F1AA3553289ad6Bb37207507823c55
+Retailer: 0xC542929c903ff1ADdEFB8B58FDE35635962350Cd (Ganache User)
+Consumer: 0xaC5B9e69B4c1F174d0175524752704e68ce9c9c4
 
-![truffle test](images/ftc_product_details.png)
+Versions:
+Truffle v5.1.65
+Node v12.19.1
+npm 6.14.8
+web3 1.2.1
+Solc 0.7.1
 
-![truffle test](images/ftc_transaction_history.png)
-
-
-## Getting Started
-
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
-
-### Prerequisites
-
-Please make sure you've already installed ganache-cli, Truffle and enabled MetaMask extension in your browser.
-
-```
-Give examples (to be clarified)
-```
-
-### Installing
-
-A step by step series of examples that tell you have to get a development env running
-
-Clone this repository:
-
-```
-git clone https://github.com/udacity/nd1309/tree/master/course-5/project-6
-```
-
-Change directory to ```project-6``` folder and install all requisite npm packages (as listed in ```package.json```):
-
-```
-cd project-6
-npm install
-```
-
-Launch Ganache:
-
-```
-ganache-cli -m "spirit supply whale amount human item harsh scare congress discover talent hamster"
-```
-
-Your terminal should look something like this:
-
-![truffle test](images/ganache-cli.png)
-
-In a separate terminal window, Compile smart contracts:
-
-```
-truffle compile
-```
-
-Your terminal should look something like this:
-
-![truffle test](images/truffle_compile.png)
-
-This will create the smart contract artifacts in folder ```build\contracts```.
-
-Migrate smart contracts to the locally running blockchain, ganache-cli:
-
-```
-truffle migrate
-```
-
-Your terminal should look something like this:
-
-![truffle test](images/truffle_migrate.png)
-
-Test smart contracts:
-
-```
-truffle test
-```
-
-All 10 tests should pass.
-
-![truffle test](images/truffle_test.png)
-
-In a separate terminal window, launch the DApp:
-
-```
-npm run dev
-```
-
-## Built With
-
-* [Ethereum](https://www.ethereum.org/) - Ethereum is a decentralized platform that runs smart contracts
-* [IPFS](https://ipfs.io/) - IPFS is the Distributed Web | A peer-to-peer hypermedia protocol
-to make the web faster, safer, and more open.
-* [Truffle Framework](http://truffleframework.com/) - Truffle is the most popular development framework for Ethereum with a mission to make your life a whole lot easier.
-
-
-## Authors
-
-See also the list of [contributors](https://github.com/your/project/contributors.md) who participated in this project.
-
-## Acknowledgments
-
-* Solidity
-* Ganache-cli
-* Truffle
-* IPFS
+## Requirement 1: Implement Interfaces
+## Requirement 2: Build out AccessControl contract
+## Requirement 3: Build out Base Contract
+## Requirement 4: Build out Core Contract

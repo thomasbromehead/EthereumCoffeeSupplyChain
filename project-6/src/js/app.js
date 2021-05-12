@@ -1,3 +1,8 @@
+let provider;
+require(['../../node_modules/@metamask/detect-provider/dist/detect-provider'], function(required) {
+    (async () => { provider = await required()})();
+});
+
 App = {
     web3Provider: null,
     contracts: {},
@@ -5,17 +10,17 @@ App = {
     sku: 0,
     upc: 0,
     metamaskAccountID: "0x0000000000000000000000000000000000000000",
-    ownerID: "0x0000000000000000000000000000000000000000",
-    originFarmerID: "0x0000000000000000000000000000000000000000",
+    ownerID: "0xA95B5bdF5DD35B243457cc40c152a8D7fCA23006",
+    originFarmerID: "0xcD4b008789742eb41c0160c07384D8d03fA3A7B4",
     originFarmName: null,
     originFarmInformation: null,
     originFarmLatitude: null,
     originFarmLongitude: null,
     productNotes: null,
     productPrice: 0,
-    distributorID: "0x0000000000000000000000000000000000000000",
-    retailerID: "0x0000000000000000000000000000000000000000",
-    consumerID: "0x0000000000000000000000000000000000000000",
+    distributorID: "0x4F58dfA687F1AA3553289ad6Bb37207507823c55",
+    retailerID: "0xC542929c903ff1ADdEFB8B58FDE35635962350Cd",
+    consumerID: "0xaC5B9e69B4c1F174d0175524752704e68ce9c9c4",
 
     init: async function () {
         App.readForm();
@@ -39,6 +44,7 @@ App = {
         App.consumerID = $("#consumerID").val();
 
         console.log(
+            "Info about contract and actors:",
             App.sku,
             App.upc,
             App.ownerID, 
@@ -57,116 +63,153 @@ App = {
 
     initWeb3: async function () {
         /// Find or Inject Web3 Provider
-        /// Modern dapp browsers...
-        if (window.ethereum) {
+        /// Modern dapp browsers... 
+        if(window.ethereum == provider){
             App.web3Provider = window.ethereum;
             try {
                 // Request account access
-                await window.ethereum.enable();
+                let accounts = await window.ethereum.request({method: 'eth_requestAccounts'});
+                console.log("Thanks for connecting to this site!");
+                App.getMetamaskAccountID();
+                if(accounts.length == 0){
+                    let accountUnlocked = await ethereum.isUnlocked();
+                    if(!accountUnlocked()){
+                        alert("Please connect your account to this site") 
+                    } 
+                }
+                console.log("ACCOUNTS IN FIRST CALL ARE:", accounts);
             } catch (error) {
                 // User denied account access...
                 console.error("User denied account access")
             }
         }
-        // Legacy dapp browsers...
-        else if (window.web3) {
-            App.web3Provider = window.web3.currentProvider;
-        }
         // If no injected web3 instance is detected, fall back to Ganache
         else {
+            console.log("Using Ganache");
             App.web3Provider = new Web3.providers.HttpProvider('http://localhost:7545');
         }
-
-        App.getMetaskAccountID();
-
+        console.log("here");
         return App.initSupplyChain();
     },
 
-    getMetaskAccountID: function () {
-        web3 = new Web3(App.web3Provider);
+    getMetamaskAccountID: async function () {
+        try {
+            window.ethereum.request({method: 'eth_requestAccounts'})
+            .then(res => {
+                App.metamaskAccountID = res[0];
+                console.log("Currently using this account", res[0])
+            })
+            .catch(error => {
+                console.log("An error occured while retrieving the account", error)
+            })
+        } catch (error) {
+            console.log("An error occured", error);
+        }
 
-        // Retrieving accounts
-        web3.eth.getAccounts(function(err, res) {
-            if (err) {
-                console.log('Error:',err);
-                return;
-            }
-            console.log('getMetaskID:',res);
-            App.metamaskAccountID = res[0];
-
-        })
     },
 
     initSupplyChain: function () {
         /// Source the truffle compiled smart contracts
         var jsonSupplyChain='../../build/contracts/SupplyChain.json';
-        
-        /// JSONfy the smart contracts
+        // JSONfy the smart contracts
         $.getJSON(jsonSupplyChain, function(data) {
-            console.log('data',data);
+            console.log('data', data);
             var SupplyChainArtifact = data;
+            console.log("Truffle Contract", TruffleContract(SupplyChainArtifact))
             App.contracts.SupplyChain = TruffleContract(SupplyChainArtifact);
+            console.log("Available contracts", App.contracts);
             App.contracts.SupplyChain.setProvider(App.web3Provider);
-            
             App.fetchItemBufferOne();
             App.fetchItemBufferTwo();
             App.fetchEvents();
-
         });
-
         return App.bindEvents();
     },
 
     bindEvents: function() {
-        $(document).on('click', App.handleButtonClick);
+        console.log(document);
+        document.addEventListener('click', App.handleButtonClick);
     },
 
     handleButtonClick: async function(event) {
         event.preventDefault();
-
-        App.getMetaskAccountID();
-
+        App.getMetamaskAccountID();
         var processId = parseInt($(event.target).data('id'));
-        console.log('processId',processId);
-
+        console.log('processId', processId);
         switch(processId) {
             case 1:
-                return await App.harvestItem(event);
+                return await App.addRole(event);
                 break;
             case 2:
-                return await App.processItem(event);
+                return await App.renounceRole(event);
                 break;
             case 3:
-                return await App.packItem(event);
+                return await App.isFarmer(event);
                 break;
             case 4:
-                return await App.sellItem(event);
+                return await App.isDistributor(event);
                 break;
             case 5:
-                return await App.buyItem(event);
+                return await App.isRetailer(event);
                 break;
             case 6:
-                return await App.shipItem(event);
+                return await App.isConsumer(event);
+                break;
+            case 6:
+                return await App.fetchItemBufferOne(event);
+                break;
+            case 7:
+                return await App.fetchItemBufferTwo(event);
                 break;
             case 7:
                 return await App.receiveItem(event);
                 break;
             case 8:
-                return await App.purchaseItem(event);
+                return await App.harvestItem(event);
                 break;
             case 9:
-                return await App.fetchItemBufferOne(event);
+                return await App.processItem(event);
                 break;
             case 10:
-                return await App.fetchItemBufferTwo(event);
+                return await App.packItem(event);
+                break;
+            case 11:
+                return await App.sellItem(event);
+                break;
+            case 12:
+                return await App.buyItem(event);
+                break;
+            case 13:
+                return await App.shipItem(event);
+                break;
+            case 14:
+                return await App.receiveItem(event);
+                break;
+            case 15:
+                return await App.purchaseItem(event);
                 break;
             }
     },
 
-    harvestItem: function(event) {
+    addRole: function(event){
         event.preventDefault();
-        var processId = parseInt($(event.target).data('id'));
+        let roleOption = document.getElementById("addressRole");
+        if(roleOption){
+            let selectedRole = roleOption.value;
+            let instance = App.contracts.SupplyChain.deployed()
+            // Call the appropriate smart contrat function.
+            // then(instance => {
+            //     return instance.add
+            // })
+        } else {
+            throw new Error("Could not find element with id ownerId");
+        }
 
+    },
+
+    harvestItem: function(event){
+        event.preventDefault();
+        console.log("Supply chain contract", App.contracts.SupplyChain);
         App.contracts.SupplyChain.deployed().then(function(instance) {
             return instance.harvestItem(
                 App.upc, 
@@ -187,8 +230,6 @@ App = {
 
     processItem: function (event) {
         event.preventDefault();
-        var processId = parseInt($(event.target).data('id'));
-
         App.contracts.SupplyChain.deployed().then(function(instance) {
             return instance.processItem(App.upc, {from: App.metamaskAccountID});
         }).then(function(result) {
@@ -201,8 +242,6 @@ App = {
     
     packItem: function (event) {
         event.preventDefault();
-        var processId = parseInt($(event.target).data('id'));
-
         App.contracts.SupplyChain.deployed().then(function(instance) {
             return instance.packItem(App.upc, {from: App.metamaskAccountID});
         }).then(function(result) {
@@ -215,15 +254,13 @@ App = {
 
     sellItem: function (event) {
         event.preventDefault();
-        var processId = parseInt($(event.target).data('id'));
-
         App.contracts.SupplyChain.deployed().then(function(instance) {
             const productPrice = web3.toWei(1, "ether");
             console.log('productPrice',productPrice);
             return instance.sellItem(App.upc, App.productPrice, {from: App.metamaskAccountID});
         }).then(function(result) {
             $("#ftc-item").text(result);
-            console.log('sellItem',result);
+            console.log('Selling Item', result);
         }).catch(function(err) {
             console.log(err.message);
         });
@@ -231,8 +268,6 @@ App = {
 
     buyItem: function (event) {
         event.preventDefault();
-        var processId = parseInt($(event.target).data('id'));
-
         App.contracts.SupplyChain.deployed().then(function(instance) {
             const walletValue = web3.toWei(3, "ether");
             return instance.buyItem(App.upc, {from: App.metamaskAccountID, value: walletValue});
@@ -246,13 +281,11 @@ App = {
 
     shipItem: function (event) {
         event.preventDefault();
-        var processId = parseInt($(event.target).data('id'));
-
         App.contracts.SupplyChain.deployed().then(function(instance) {
             return instance.shipItem(App.upc, {from: App.metamaskAccountID});
         }).then(function(result) {
-            $("#ftc-item").text(result);
             console.log('shipItem',result);
+            $("#ftc-item").text(result);
         }).catch(function(err) {
             console.log(err.message);
         });
@@ -260,8 +293,6 @@ App = {
 
     receiveItem: function (event) {
         event.preventDefault();
-        var processId = parseInt($(event.target).data('id'));
-
         App.contracts.SupplyChain.deployed().then(function(instance) {
             return instance.receiveItem(App.upc, {from: App.metamaskAccountID});
         }).then(function(result) {
@@ -274,8 +305,6 @@ App = {
 
     purchaseItem: function (event) {
         event.preventDefault();
-        var processId = parseInt($(event.target).data('id'));
-
         App.contracts.SupplyChain.deployed().then(function(instance) {
             return instance.purchaseItem(App.upc, {from: App.metamaskAccountID});
         }).then(function(result) {
@@ -333,13 +362,34 @@ App = {
         });
         }).catch(function(err) {
           console.log(err.message);
-        });
-        
+        }); 
     }
 };
 
-$(function () {
-    $(window).load(function () {
-        App.init();
-    });
+window.addEventListener('load', () => {
+    console.log("Starting the app");
+    App.init();
+    window.App = App;
+    console.log("Window.App", window.App)
+})
+// $(function () {
+//     $(window).load(function () {
+//         console.log("Starting the app");
+//         App.init();
+//         window.App = App;
+//         console.log("Window.App", window.App)
+//     });
+// });
+
+ethereum.on('accountsChanged', (accounts) => {
+// Handle the new accounts, or lack thereof.
+// "accounts" will always be an array, but it can be empty.
+    console.log(accounts);
+});
+  
+ethereum.on('chainChanged', (chainId) => {
+// Handle the new chain.
+// Correctly handling chain changes can be complicated.
+// We recommend reloading the page unless you have good reason not to.
+    window.location.reload();
 });
