@@ -6,6 +6,13 @@ pragma solidity 0.7.1;
  import "../coffeeaccesscontrol/RetailerRole.sol";
  import "../coffeecore/Ownable.sol";
 
+// (0) 0x9e7180Fd3EE289cb405fE4103969f23Bd0C3095D (100 ETH)
+// (1) 0x9706125EAd18988De2660E650D034C4954059E5C (100 ETH)
+// (2) 0xa89Cfb54eB1F542343B6352552A82c201c705606 (100 ETH)
+// (3) 0xCd863A116A2c8f2E3b0A1AcF6D470d1C301f8c87 (100 ETH)
+// (4) 0x898d1B846541a2595976f4f41Ddd7d9687F5a784 (100 ETH)
+// Gas limit 6721975
+
 contract SupplyChain is ConsumerRole, DistributorRole, FarmerRole, RetailerRole, Ownable {
   // Define a variable called 'upc' for Universal Product Code (UPC)
   uint  upc;
@@ -27,14 +34,15 @@ contract SupplyChain is ConsumerRole, DistributorRole, FarmerRole, RetailerRole,
   // Define enum 'State' with the following values:
   enum State 
   { 
-    Harvested,  // 0
-    Processed,  // 1
-    Packed,     // 2
-    ForSale,    // 3
-    Sold,       // 4
-    Shipped,    // 5
-    Received,   // 6
-    Purchased   // 7
+    Growing,
+    Harvested,  // 1
+    Processed,  // 2
+    Packed,     // 3
+    ForSale,    // 4
+    Sold,       // 5
+    Shipped,    // 6
+    Received,   // 7
+    Purchased   // 8
     }
 
   State constant defaultState = State.Harvested;
@@ -82,14 +90,14 @@ contract SupplyChain is ConsumerRole, DistributorRole, FarmerRole, RetailerRole,
 
   // Define a modifer that verifies the Caller
   modifier verifyCaller (address _address) {
-    (msg.sender == _address); 
+    require(msg.sender == _address, "Invalid method caller"); 
     _;
   }
 
   // Define a modifier that checks if the paid amount is sufficient to cover the price
   modifier paidEnough(uint _upc) { 
     uint price = items[_upc].productPrice;
-    (msg.value >= price); 
+    require(msg.value >= price, "This item is priced higher than what you're paying for."); 
     _;
   }
   
@@ -104,49 +112,49 @@ contract SupplyChain is ConsumerRole, DistributorRole, FarmerRole, RetailerRole,
 
   // Define a modifier that checks if an item.state of a upc is Harvested
   modifier harvested(uint _upc) {
-    (items[_upc].itemState == State.Harvested);
+    require(items[_upc].itemState == State.Harvested, "Item has not been harvested yet");
     _;
   }
 
   // Define a modifier that checks if an item.state of a upc is Processed
   modifier processed(uint _upc) {
-    (items[_upc].itemState == State.Processed);
+    require(items[_upc].itemState == State.Processed, "Item's not been processed yet");
     _;
   }
   
   // Define a modifier that checks if an item.state of a upc is Packed
   modifier packed(uint _upc) {
-    (items[_upc].itemState == State.Packed);
+    require(items[_upc].itemState == State.Packed, "Item's not been packed yet");
     _;
   }
 
   // Define a modifier that checks if an item.state of a upc is ForSale
   modifier forSale(uint _upc) {
-    (items[_upc].itemState == State.ForSale);
+    require(items[_upc].itemState == State.ForSale, "This Item is not yet for sale");
     _;
   }
 
   // Define a modifier that checks if an item.state of a upc is Sold
   modifier sold(uint _upc) {
-    (items[_upc].itemState == State.Sold);
+    require(items[_upc].itemState == State.Sold, "Item hasn't been sold yet");
     _;
   }
   
   // Define a modifier that checks if an item.state of a upc is Shipped
   modifier shipped(uint _upc) {
-    (items[_upc].itemState == State.Shipped);
+    require(items[_upc].itemState == State.Shipped, "This item hasn't been shipped yet");
     _;
   }
 
   // Define a modifier that checks if an item.state of a upc is Received
   modifier received(uint _upc) {
-    (items[_upc].itemState == State.Received);
+    require(items[_upc].itemState == State.Received, "Item's not been received yet");
     _;
   }
 
   // Define a modifier that checks if an item.state of a upc is Purchased
   modifier purchased(uint _upc) {
-    (items[_upc].itemState == State.Purchased);
+    require(items[_upc].itemState == State.Purchased, "This item hasn't been purchased yet");
     _;
   }
   modifier greaterThanZero(uint _price){
@@ -209,6 +217,11 @@ contract SupplyChain is ConsumerRole, DistributorRole, FarmerRole, RetailerRole,
     sku = sku + 1;
     // Emit the appropriate event
     emit Harvested(_upc);
+  }
+
+  function getItemState(uint _upc) public view returns(State state){
+    Item storage item = items[_upc];
+    return item.itemState;
   }
 
   function getContractState() public view returns(ContractState){
@@ -287,7 +300,6 @@ contract SupplyChain is ConsumerRole, DistributorRole, FarmerRole, RetailerRole,
     paidEnough(_upc)
     onlyDistributor()
     // Call modifer to send any excess ether back to buyer
-    checkValue(_upc)
     {
     Item storage item = items[_upc];
     // Update the appropriate fields - ownerID, distributorID, itemState
@@ -305,7 +317,7 @@ contract SupplyChain is ConsumerRole, DistributorRole, FarmerRole, RetailerRole,
   // Use the above modifers to check if the item is sold
   function shipItem(uint _upc) public verifyNotPaused()
     // Call modifier to check if upc has passed previous supply chain stage
-    forSale(_upc)
+    sold(_upc)
     // Call modifier to verify caller of this function
      onlyDistributor()
   {
@@ -335,11 +347,11 @@ contract SupplyChain is ConsumerRole, DistributorRole, FarmerRole, RetailerRole,
 
   // Define a function 'purchaseItem' that allows the consumer to mark an item 'Purchased'
   // Use the above modifiers to check if the item is received
-  function purchaseItem(uint _upc) public verifyNotPaused()
+  function purchaseItem(uint _upc) public payable verifyNotPaused()
     onlyConsumer()
     received(_upc)
     // Call modifier to check if upc has passed previous supply chain stage
-    
+    checkValue(_upc)
     // Access Control List enforced by calling Smart Contract / DApp
     {
     Item storage item = items[_upc];

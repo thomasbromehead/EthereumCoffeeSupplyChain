@@ -32,12 +32,14 @@ contract RetailerRole {
 
   // Define a function 'addRetailer' that adds this role
   function addRetailer(address account) public onlyRetailer {
+    require(!isRetailer(account), "This account is already a Retailer");
     _addRetailer(account);
     emit RetailerAdded(account);
   }
 
   // Define a function 'renounceRetailer' to renounce this role
   function renounceRetailer(address account) public onlyRetailer {
+    require(isRetailer(account), "This account is not a Retailer");
     _removeRetailer(account);
     emit RetailerRemoved(account);
   }

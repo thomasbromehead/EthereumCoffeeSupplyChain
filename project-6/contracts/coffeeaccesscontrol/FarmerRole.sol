@@ -32,12 +32,14 @@ contract FarmerRole {
 
   // Define a function 'addFarmer' that adds this role
   function addFarmer(address account) public onlyFarmer {
+    require(!isFarmer(account), "This account is already a Farmer");
     _addFarmer(account);
     emit FarmerAdded(account);
   }
 
   // Define a function 'renounceFarmer' to renounce this role
-  function renounceFarmer() public {
+  function renounceFarmer(address account) public onlyFarmer {
+    require(isFarmer(account), "This account is not a Farmer");
     _removeFarmer(msg.sender);
     emit FarmerRemoved(account);
   }
@@ -45,12 +47,10 @@ contract FarmerRole {
   // Define an internal function '_addFarmer' to add this role, called by 'addFarmer'
   function _addFarmer(address account) internal {
     farmers.add(account);
-    emit FarmerAdded(account);
   }
 
   // Define an internal function '_removeFarmer' to remove this role, called by 'removeFarmer'
   function _removeFarmer(address account) internal {
     farmers.remove(account);
-    emit FarmerRemoved(account);
   }
 }

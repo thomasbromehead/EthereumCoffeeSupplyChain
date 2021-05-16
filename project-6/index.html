@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fair Trade Coffee</title>
-    <script src="js/require.js"></script>
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="style.css">
 </head>
@@ -16,36 +15,41 @@
         <hr>
         <p style="text-align: center;">Prove the authenticity of coffee using the Ethereum blockchain.</p>
     </div>
-
-    <div id="ftc-harvest">
+    <div id="ftc-harvest">        
+        <h2>Manage Roles</h2>
         <div class="form-group">
-            <h2>Manage Roles</h2>
-            <label for="ownerID">Address</label><br>
-            <input type="text" id="ownerID" name="ownerID" value="0x963865f57804b38459dd4b2da2f760211a200438" size="50"><br>
-            <label for="roleOption">Role</label><br>
-            <select id="addressRole" name="roleOption">
+            Add / Remove Roles
+            <select class="btn-harvest" id="addRoleType" type="button">
                 <option value="Farmer">Farmer</option>
                 <option value="Distributor">Distributor</option>
                 <option value="Retailer">Retailer</option>
                 <option value="Consumer">Consumer</option>
-            </select><br>
-            <div class=button-div>
-                <button class="btn-harvest" id="btn-addRole" type="button" data-id="1">Add Role</button>
-                <button class="btn-harvest" id="btn-renounceRole" type="button" data-id="2">Renounce Role</button>
-            </div>
+            </select>
+            <br>
+            <label for="addRoleAddress">Address</label>
+            <br>
+            <input type="text" name="addRoleAddress" id="addRoleAddress">
+            <br>
+            <button class="btn-harvest" id="button" type="button" data-id="1">Add Selected Role</button>
+            <button class="btn-harvest" id="button" type="button" data-id="2">Renounce Selected Role</button>
         </div>
-        <div class=form-break></div>
         <div class=form-break></div>
         <div class="form-group">
-            <h2>Check Roles</h2>
-            <label for="roleAddress">Address</label><br>
-            <input type="text" id="ownerID" name="roleAddress" placeholder="Enter an address" size="50"><br>
-            <button class="btn-harvest" id="btn-isFarmer" type="button">Is Farmer?</button>
-            <button class="btn-harvest" id="btn-isDistributor" type="button-check-isDistributor" data-id="3">Is Distributor?</button>
-            <button class="btn-harvest" id="btn-isRetailer" type="button-check-isRetailer" data-id="4">Is Retailer?</button>
-            <button class="btn-harvest" id="btn-isConsumer" type="button-check-isConsumer" data-id="5">Is Consumer?</button>
+            Check Roles
+            <br>
+            <select class="btn-harvest" id="checkRoleType" type="button">
+                <option value="Farmer">Farmer</option>
+                <option value="Distributor">Distributor</option>
+                <option value="Retailer">Retailer</option>
+                <option value="Consumer">Consumer</option>
+            </select>
+            <br>
+            <label for="checkRoleAddress">Address</label>
+            <br>
+            <input type="text" name="checkRoleAddress" id="checkRoleAddress">
+            <h2 id="hasRoleResult"></h2>
+            <button class="btn-harvest" id="button" type="button" data-id="3">Has Role?</button>
         </div>
-        <div class=form-break></div>
         <div class=form-break></div>
         <h2>Product Overview</h2>
         <div class="form-group">
@@ -59,33 +63,38 @@
             <br>
             <input type="text" id="ownerID" name="ownerID" value="0x963865f57804b38459dd4b2da2f760211a200438" size="50"><br>
             <div class=button-div>
-                <button class="btn-fetchOne" onclick="App.fetchItemBufferOne" id="button" type="button" data-id="6">Fetch Data 1</button>
-                <button class="btn-fetchTwo" onclick="App.fetchItemBufferTwo" id="button" type="button" data-id="7">Fetch Data 2</button>
+                <button class="btn-fetchOne" id="button" type="button" data-id="4">Fetch Data 1</button>
+                <button class="btn-fetchTwo" id="button" type="button" data-id="5">Fetch Data 2</button>
             </div>
         </div>
+        <div class=form-break></div>
         <h2>Farm Details</h2>
         <div class="form-group">
             Farmer ID
             <br>
-            <input type="text" id="originFarmerID" name="originFarmerID" value="0x99c289eb2aacec289631a5ddf62cf27a63d4494f"
+            <input type="text" id="originFarmerID" name="originFarmerID" value=""
                 size="50"><br>
             Farm Name
             <br>
-            <input type="text" id="originFarmName" name="originFarmName" value="John Doe"><br>
+            <input type="text" id="originFarmName" name="originFarmName" value=""><br>
             Farm Information
             <br>
-            <input type="text" id="originFarmInformation" name="originFarmInformation" value="Yarra Valley"><br>
+            <input type="text" id="originFarmInformation" name="originFarmInformation" value=""><br>
             Farm Latitude
             <br>
-            <input type="text" id="originFarmLatitude" name="originFarmLatitude" value="-38.239770"><br>
+            <input type="text" id="originFarmLatitude" name="originFarmLatitude" value=""><br>
             Farm Longitude
             <br>
-            <input type="text" id="originFarmLongitude" name="originFarmLongitude" value="144.341490"><br>
+            <input type="text" id="originFarmLongitude" name="originFarmLongitude" value=""><br>
             <br>
-            <button class="btn-harvest" onclick="App.harvestItem" id="button" type="button" data-id="8">Harvest</button>
-            <button class="btn-process" onclick="App.processItem" id="button" type="button" data-id="9">Process</button>
-            <button class="btn-pack" onclick="App.packItem" id="button" type="button" data-id="10">Pack</button>
-            <button class="btn-forsale" onclick="App.sellItem" id="button" type="button" data-id="11">ForSale</button>
+            <h4>Choose an Item on which to act</h4>
+            <label for="itemNumber">UPC</label>
+            <input type="number" id="itemNumber" value="1" onchange="changeUpc()">
+            <br>
+            <button class="btn-harvest" id="button" type="button" data-id="6">Harvest</button>
+            <button class="btn-process" id="button" type="button" data-id="7">Process</button>
+            <button class="btn-pack" id="button" type="button" data-id="8">Pack</button>
+            <button class="btn-forsale" id="button" type="button" data-id="9">ForSale</button>
         </div>
         <div class=form-break></div>
         <h2>Product Details</h2>
@@ -98,25 +107,33 @@
             <input type="number" id="productPrice" name="productPrice" value=1>ETH<br>
             Distributor ID
             <br>
-            <input type="text" id="distributorID" name="distributorID" value="0xf1b1bcd24dad92303dd9fe78be639f7bcf9c238d"
+            <input type="text" id="distributorID" name="distributorID" value=""
                 size="50">
             <br>
             Retailer ID
             <br>
-            <input type="text" id="retailerID" name="retailerID" value="0x0fb2bfefd526966c87efa19f6693d50971763fc2"
+            <input type="text" id="retailerID" name="retailerID" value=""
                 size="50"><br>
-            Distributor ID
+            Consumer ID
             <br>
-            <input type="text" id="consumerID" name="consumerID" value="0x5d777e9127b28fb119e81a6304278a0a21bef1c4"
+            <input type="text" id="consumerID" name="consumerID" value=""
                 size="50"><br>
             <br>
-            <button class="btn-buy" id="button" type="button" data-id="12">Buy</button>
-            <button class="btn-ship" id="button" type="button" data-id="13">Ship</button>
-            <button class="btn-receive" id="button" type="button" data-id="14">Receive</button>
-            <button class="btn-purchase" id="button" type="button" data-id="15">Purchase</button>
+            <button class="btn-buy" id="button" type="button" data-id="10">Buy</button>
+            <button class="btn-ship" id="button" type="button" data-id="11">Ship</button>
+            <button class="btn-receive" id="button" type="button" data-id="12">Receive</button>
+            <button class="btn-purchase" id="button" type="button" data-id="13">Purchase</button>
         </div>
-        <div id="ftc-item"></div>   
         <div class=form-break></div>
+        <h2>Product State</h2>
+        <div class="form-group">
+            <label for="itemId">Enter a UPC</label>
+            <input type="text" id="itemId" name="itemId" value="1" size="50"><br>
+            <div class=button-div>
+                <button class="btn-fetchOne" id="button" type="button" data-id="14">Get State</button>
+            </div>
+            <h3>State: <span id="stateResult"></span></h3>
+        </div>
         <hr>
     </div>
 
@@ -130,9 +147,15 @@
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <!-- <script src="js/web3.min.js"></script> -->
-    <script src="js/app.js"></script>
+    <script src="js/web3.min.js"></script>
     <script src="js/truffle-contract.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        const changeUpc = (e) => {
+            let upc = document.getElementById("itemNumber").value;
+            App.upc = upc;
+        }
+    </script>
 </body>
 
 </html>

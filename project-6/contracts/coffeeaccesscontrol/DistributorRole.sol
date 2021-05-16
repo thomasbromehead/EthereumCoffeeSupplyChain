@@ -34,6 +34,7 @@ contract DistributorRole {
   // Define a function 'addDistributor' that adds this role
   function addDistributor(address account) public onlyDistributor() {
     // This will throw
+    require(!isDistributor(account), "This account is already a Distributor");
     _addDistributor(account);
     emit DistributorAdded(account);
   }
@@ -41,6 +42,7 @@ contract DistributorRole {
   // Define a function 'renounceDistributor' to renounce this role
   function renounceDistributor(address account) public onlyDistributor() {
     // This will throw
+    require(isDistributor(account), "This account is not a Distributor");
     _removeDistributor(account);
     emit DistributorRemoved(account);
   }

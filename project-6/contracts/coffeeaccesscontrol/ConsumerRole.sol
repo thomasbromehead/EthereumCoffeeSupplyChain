@@ -35,12 +35,14 @@ contract ConsumerRole {
   // Define a function 'addConsumer' that adds this role
   function addConsumer(address account) public onlyConsumer() {
     // This will throw
+    require(!isConsumer(account), "This account is already a Consumer");
     _addConsumer(account);
     emit ConsumerAdded(account);
   }
 
   // Define a function 'renounceConsumer' to renounce this role
   function renounceConsumer(address account) public onlyConsumer() {
+    require(isConsumer(account), "This account is not a Consumer");
     _removeConsumer(account);
     emit ConsumerRemoved(account);
   }

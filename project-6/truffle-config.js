@@ -1,10 +1,23 @@
 const HDWalletProvider = require('truffle-hdwallet-provider');
 const NonceTrackerSubprovider = require("web3-provider-engine/subproviders/nonce-tracker");
 require('dotenv').config();
-const mnemonic = process.env.MNEMONIC;
-const infura_key = process.env.INFURA_KEY;
-console.log("MNEMONIC IS:", mnemonic);
-console.log("INFURAK KEY IS:", infura_key);
+// const mnemonic = process.env.MNEMONIC;
+
+const mnemonic = "lemon destroy color fragile drama dish elbow until abandon census oven obey";
+// const infura_key = process.env.INFURA_KEY;
+
+providers = {
+  ganache: {
+    mnemonic: "lemon destroy color fragile drama dish elbow until abandon census oven obey",
+    wallet: new HDWalletProvider(mnemonic, "http://localhost:8545")
+  },
+  rinkeby: {
+    // Given by Metamask
+    // infura_key = process.env.INFURA_KEY || "",
+    // mnemonic: "monkey cream zone canvas tower omit symbol sun add caught raw bread",
+    // wallet: new HDWalletProvider(this.rinkeby.mnemonic, `https://rinkeby.infura.io/v3/${this.rinkeby.infura_key}`)
+  }
+}
 
 module.exports = {
   networks: {
@@ -26,11 +39,7 @@ module.exports = {
     //   gasPrice: 21000000000
     rinkeby: {
       provider: () => {
-        //var wallet = new HDWalletProvider(mnemonic, `https://rinkeby.infura.io/v3/${infura_key}`);
-        var wallet = new HDWalletProvider(
-          "monkey cream zone canvas tower omit symbol sun add caught raw bread",
-          `https://rinkeby.infura.io/v3/a5509144fe434cb6b4001d4b4af2243b`);
-        // console.log("WALLET IS ", wallet);
+        var wallet = providers.ganache.wallet;
         var nonceTracker = new NonceTrackerSubprovider();
         wallet.engine._providers.unshift(nonceTracker);
         nonceTracker.setEngine(wallet.engine);
@@ -49,5 +58,5 @@ module.exports = {
       parser: "solcjs",
       docker: true
     }
-  }
+  } 
 };
