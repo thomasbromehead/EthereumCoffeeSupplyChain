@@ -267,14 +267,15 @@ App = {
             return instance.getItemState(upc);
         }).then(res => {
             const states = {
-                0: "Harvested",
-                1: "Processed",
-                2: "Packed",
-                3: "ForSale",
-                4: "Sold",
-                5: "Shipped",
-                6: "Received",
-                7: "Purchased"
+                0: "Growing",
+                1: "Harvested",
+                2: "Processed",
+                3: "Packed",
+                4: "ForSale",
+                5: "Sold",
+                6: "Shipped",
+                7: "Received",
+                8: "Purchased"
             }
             let status = states[res.c[0]];
             document.getElementById("stateResult").innerText = status;
@@ -284,14 +285,20 @@ App = {
     harvestItem: function(event) {
         event.preventDefault();
         App.contracts.SupplyChain.deployed().then(function(instance) {
+            let originFarmName = document.getElementById("originFarmName").value;
+            let originFarmInformation = document.getElementById("originFarmInformation").value;
+            let originFarmLatitude = document.getElementById("originFarmLatitude").value;
+            let originFarmLongitude = document.getElementById("originFarmLongitude").value;
+            let productNotes = document.getElementById("productNotes").value;
+            debugger;
             return instance.harvestItem(
                 App.upc, 
                 App.metamaskAccountID, 
-                App.originFarmName, 
-                App.originFarmInformation, 
-                App.originFarmLatitude, 
-                App.originFarmLongitude, 
-                App.productNotes
+                originFarmName, 
+                originFarmInformation, 
+                originFarmLatitude, 
+                originFarmLongitude, 
+                productNotes
             , {from: App.metamaskAccountID});
         }).then(function(result) {
             $("#ftc-item").text(result);
@@ -409,8 +416,8 @@ App = {
         });
     },
 
-    fetchItemBufferOne: function () {
-    ///   event.preventDefault();
+    fetchItemBufferOne: function (event) {
+         event.preventDefault();
     ///    var processId = parseInt($(event.target).data('id'));
         App.upc = $('#upc').val();
         console.log('upc', App.upc);
@@ -420,6 +427,7 @@ App = {
         }).then(function(result) {
           $("#ftc-item").text(result);
           const [, ,ownerId, originFarmerID, originFarmName, originFarmInformation, originFarmLatitude, originFarmLongitude] = result;
+          debugger;
           document.getElementById("originFarmerID").value = originFarmerID;
           document.getElementById("originFarmLatitude").value = originFarmLatitude;
           document.getElementById("originFarmName").value = originFarmName;

@@ -6,13 +6,6 @@ pragma solidity 0.7.1;
  import "../coffeeaccesscontrol/RetailerRole.sol";
  import "../coffeecore/Ownable.sol";
 
-// (0) 0x9e7180Fd3EE289cb405fE4103969f23Bd0C3095D (100 ETH)
-// (1) 0x9706125EAd18988De2660E650D034C4954059E5C (100 ETH)
-// (2) 0xa89Cfb54eB1F542343B6352552A82c201c705606 (100 ETH)
-// (3) 0xCd863A116A2c8f2E3b0A1AcF6D470d1C301f8c87 (100 ETH)
-// (4) 0x898d1B846541a2595976f4f41Ddd7d9687F5a784 (100 ETH)
-// Gas limit 6721975
-
 contract SupplyChain is ConsumerRole, DistributorRole, FarmerRole, RetailerRole, Ownable {
   // Define a variable called 'upc' for Universal Product Code (UPC)
   uint  upc;
@@ -45,7 +38,8 @@ contract SupplyChain is ConsumerRole, DistributorRole, FarmerRole, RetailerRole,
     Purchased   // 8
     }
 
-  State constant defaultState = State.Harvested;
+  // Weird decision... if I can harvest then default state shouldn't be harvested...
+  State constant defaultState = State.Growing;
 
   // Define a struct 'Item' with the following fields:
   struct Item {
@@ -187,10 +181,10 @@ contract SupplyChain is ConsumerRole, DistributorRole, FarmerRole, RetailerRole,
     uint _upc,
     address _originFarmerID,
     string memory _originFarmName,
-    string  memory  _originFarmInformation,
-    string   memory  _originFarmLatitude,
-    string  memory   _originFarmLongitude,
-    string   memory  _productNotes) 
+    string memory _originFarmInformation,
+    string memory _originFarmLatitude,
+    string memory _originFarmLongitude,
+    string memory _productNotes) 
     public 
     verifyNotPaused()
     onlyFarmer()

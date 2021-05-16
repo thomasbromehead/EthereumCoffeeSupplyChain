@@ -29,7 +29,7 @@ contract ConsumerRole {
   // Define a function 'isConsumer' to check this role
   function isConsumer(address account) public view returns (bool) {
     require(Roles.has(consumers, msg.sender), "Caller is not a Consumer");
-    return consumers.bearer[account ];
+    return consumers.bearer[account];
   }
 
   // Define a function 'addConsumer' that adds this role
