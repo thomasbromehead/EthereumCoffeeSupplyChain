@@ -101,7 +101,9 @@ contract SupplyChain is ConsumerRole, DistributorRole, FarmerRole, RetailerRole,
     uint _price = items[_upc].productPrice;
     uint amountToReturn = msg.value - _price;
     address payable consumerAddress = payable(items[_upc].consumerID);
-    consumerAddress.transfer(amountToReturn);
+    // consumerAddress.transfer(amountToReturn);
+    // HAVE TO USE THIS SYNTAX OTHERWISE REVERTS WITH NO MESSAGE...
+    consumerAddress.call{value: amountToReturn}("");
   }
 
   // Define a modifier that checks if an item.state of a upc is Harvested
@@ -191,12 +193,7 @@ contract SupplyChain is ConsumerRole, DistributorRole, FarmerRole, RetailerRole,
   {
     // Add the new item as part of Harvest
     Item storage item = items[_upc];
-    if(upc == 1 && sku == 1){
-      // Very first item
-      item.upc = 1;
-    } else {
-      item.upc = sku + upc;
-    }
+    item.upc = upc;
     item.sku = sku;
     item.ownerID = msg.sender;
     item.originFarmerID = _originFarmerID;
@@ -209,6 +206,7 @@ contract SupplyChain is ConsumerRole, DistributorRole, FarmerRole, RetailerRole,
     item.itemState = State.Harvested;
     // Increment sku
     sku = sku + 1;
+    upc = upc + 1;
     // Emit the appropriate event
     emit Harvested(_upc);
   }

@@ -2181,8 +2181,8 @@
     "5777": {
       "events": {},
       "links": {},
-      "address": "0x7206dbB3aaF9f159E3c322479588CaCdFb8e05ed",
-      "transactionHash": "0xa8b22c4eb97dd70dae783c86c29e74bbc2fee3899005610eb2c013eaa44df3c3"
+      "address": "0xaffb9a5E89ad211A1DdFF16196Be739e6E09A67C",
+      "transactionHash": "0x29270f2928c140363be37ae164a4ef750abcd2f1463d8c9763791410d2ee13ec"
     },
     "1620718515435": {
       "events": {},
@@ -2252,7 +2252,7 @@
     }
   },
   "schemaVersion": "3.3.3",
-  "updatedAt": "2021-05-17T09:43:48.021Z",
+  "updatedAt": "2021-05-17T12:36:24.581Z",
   "networkType": "ethereum",
   "devdoc": {
     "details": "Library for managing addresses assigned to a Role.",
