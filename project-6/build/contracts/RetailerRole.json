@@ -3390,8 +3390,8 @@
         }
       },
       "links": {},
-      "address": "0xe4AF8f0C95C4cc91Cd6f5841c4A393e3C750B7ea",
-      "transactionHash": "0x4cfd1507d601c1b00efa52f8974117bf559da45c97efd9d4077ad8aa6538feb9"
+      "address": "0xD262Df1d8395db0D019f0bd71a791f53Aebc7dDD",
+      "transactionHash": "0xa1d30fdfc2b10e07e0dab202b3b9c5f004867ae2530ca0399f7ea25a2162050b"
     },
     "5777": {
       "events": {},
@@ -3726,12 +3726,45 @@
         }
       },
       "links": {},
-      "address": "0x9536c0c1FA0b3F1E3c17eEd596eeACB81C0Fb8Fc",
-      "transactionHash": "0x728093e9f04ce2b5a4ba1e647521b40f9cc98fd77cc67e55e6baa5414a986f35"
+      "address": "0x19eC702b8f94D204B1284B479bE3E7E110028702",
+      "transactionHash": "0x5ca403bbd74602e062d6c5188d4e7e1bf7dfd6b5b3af4af9660a6273e6d4ebd4"
+    },
+    "1621190776174": {
+      "events": {
+        "0x71ae26cad02663e3d92efd6ec56031a80d74a20c0ab4183faa8bf262261c9baa": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "retailerAddress",
+              "type": "address"
+            }
+          ],
+          "name": "RetailerAdded",
+          "type": "event"
+        },
+        "0xdb7176e79cffef81cb01767dd0447a0b24bb72ca9778d4b245581086b2a7e6db": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "retailerAddress",
+              "type": "address"
+            }
+          ],
+          "name": "RetailerRemoved",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0x923de4e87D14ef7557Ff864Af56C308b5d3B4B4A",
+      "transactionHash": "0x4548a349edc2187ba8eec23a3d8a38885dc795abb91a9a48dbdb53498e8095d5"
     }
   },
   "schemaVersion": "3.3.3",
-  "updatedAt": "2021-05-16T16:43:54.789Z",
+  "updatedAt": "2021-05-17T09:43:47.967Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

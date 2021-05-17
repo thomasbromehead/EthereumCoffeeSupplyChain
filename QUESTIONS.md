@@ -1,37 +1,9 @@
-  ```
-  constructor() {
-      // SHOULD I CHECK AGAINST THE ZERO ADDRESS ?
-      consumers[msg.sender] = 
-    }
-```
-
-Had to make consumers private:
-```
-  Roles.Role private consumers;
-
-  // In the constructor make the address that deploys this contract the 1st consumer
-  constructor() {
-    // SHOULD I CHECK AGAINST THE ZERO ADDRESS ?
-    consumers.bearer[msg.sender] = true;
-  }
-```
-
-Why don't we deploy the Roles library as well?
-
-Can we call addConsumer from the constructor since it calls the onlyConsumer seems like you can't.
-
-Why should UPC and SKU be in SupplyChain.sol?
-uint  upc;
-
-// Define a variable called 'sku' for Stock Keeping Unit (SKU)
-uint  sku;
-
-Is it ok to set the owner of the item to the msg.sender?
-
-Why do we send the change back in a modifier? => _; means the code executes first and then we send the change.
-
-Why are errors not more meaningful when I do have a message set on reverts.
-
-Despite this, we still recommend reloading the page on chain changes => web3 documentation
-
-What is truffle-contract-schema?
+1. Generally speaking when should we check against the zero address?
+2. Why don't we deploy the Roles library as well?
+3. Is it ok to set the owner of the item to the msg.sender?
+4. What are `truffle-contract-schema` and `ethjs-abi"`? Where are they coming from, can't see them in the node modules? (require in truffle-contract)
+5. Why did we use TruffleContract in this app?
+6. Do you have a flow for saving yourself time with Ganache and Metamask? I notice you can start ganache-cli with a mnemonic so as to get the same keys everytime
+7. Why is ItemState represented as an object => X in chrome's debugger console, then decomposes down to c[2], s: 1, e: 0 for example
+8. Is there a way to see my transactions like I can in the ganache-cli logs by running `geth --rinkeby` or other?
+9. Do you have some professionally-designed UML diagrams to show me for this app?

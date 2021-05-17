@@ -23,7 +23,7 @@ module.exports = {
     },
     rinkeby: {
       provider: () => {
-        var wallet = new HDWalletProvider("monkey cream zone canvas tower omit symbol sun add caught raw bread", `https://rinkeby.infura.io/v3/a5509144fe434cb6b4001d4b4af2243b`)
+        var wallet = new HDWalletProvider("spirit supply whale amount human item harsh scare congress discover talent hamster", `https://rinkeby.infura.io/v3/a5509144fe434cb6b4001d4b4af2243b`)
         var nonceTracker = new NonceTrackerSubprovider()
         wallet.engine._providers.unshift(nonceTracker)
         nonceTracker.setEngine(wallet.engine)
@@ -32,7 +32,6 @@ module.exports = {
       network_id: 4,
       gas: 5500000,
       gasPrice: 21000000000
-    },
     // rinkeby: {
     //   provider: () => {
     //     var wallet = providers.rinkeby.wallet;
@@ -45,7 +44,7 @@ module.exports = {
     //   gas: 5500000,
     //   gasPrice: 21000000000,
     //   from: "0xA95B5bdF5DD35B243457cc40c152a8D7fCA23006"
-    //  },
+    },
   },
   compilers: {
     solc: {

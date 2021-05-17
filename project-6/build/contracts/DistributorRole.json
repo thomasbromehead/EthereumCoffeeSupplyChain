@@ -3667,8 +3667,8 @@
         }
       },
       "links": {},
-      "address": "0xe144e311fF29663E6cfC8d303F18528bDfE13387",
-      "transactionHash": "0x322176f41849c8edbc52501af77a0c3407be0412ebaf711b524d099597d6082f"
+      "address": "0xF9ED14874d15A12E7c5a52f5e13040D93C2dE8fA",
+      "transactionHash": "0x4812ca8653f26407bcd5c9c7080513b3d247da8d0232d958c1ba62bae7b25cb6"
     },
     "5777": {
       "events": {
@@ -4016,12 +4016,45 @@
         }
       },
       "links": {},
-      "address": "0xba30e78804881e44F42e480308d0ca4638B6ABA0",
-      "transactionHash": "0x1661b6246851b149d29c05bd9f68679eb6731663497fac5e2a4616c814ddc204"
+      "address": "0x406B3c7BA710Aa3d650Ec036233865f3B05aAdc8",
+      "transactionHash": "0x64dea602a770eba9f2d47a1e2b66b2a00b134b823388dcbdffce1803721709e0"
+    },
+    "1621190776174": {
+      "events": {
+        "0xddbf200aa634dc3fb81cfd68583dd1040d1c751d335e1d86b631bde3e977fea8": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "distributorAddress",
+              "type": "address"
+            }
+          ],
+          "name": "DistributorAdded",
+          "type": "event"
+        },
+        "0x126174f6cf49c81cdb4a9214c6b8f037bef55b4ec31e4fc776cea2a1c8a88d59": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "distributorAddress",
+              "type": "address"
+            }
+          ],
+          "name": "DistributorRemoved",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0x4108B19911e620B17162C477F911EA97a9D6fFF5",
+      "transactionHash": "0x5a25ad50d61e250b4540a62dcfce68704c9a6d552a208030ec234b79bff1ea44"
     }
   },
   "schemaVersion": "3.3.3",
-  "updatedAt": "2021-05-16T16:43:54.781Z",
+  "updatedAt": "2021-05-17T09:43:47.960Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

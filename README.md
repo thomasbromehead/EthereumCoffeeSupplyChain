@@ -1,28 +1,29 @@
-# UML
-# Libraries
-Truffle assertions: useful for testing reverts and events emitted
-I have docker: true in truffle-config.js, turn that off at will
+Hi Mentor/Corrector,
+All tests are passing, added some to test the Access Control for the Distributor and Consumer Roles, all 4 contracts are pretty much the same so only did these two.
+I have `docker: true` in `truffle-config.js`, turn that off at will
+The mnemonic and infura keys are passed into the truffle-config.js code through a .env file.
 
-Libraries used by the front-end: ethjs-abi is deprecated.
+
+# UML
+[Activity diagram](https://lucid.app/lucidchart/invitations/accept/inv_078f22d6-2d15-4a67-b1bd-2aea89c66f8c?viewport_loc=-353%2C673%2C2713%2C1538%2CDhyzAE0yT9De)
+[Sequence diagram](https://lucid.app/lucidchart/invitations/accept/inv_38928bec-ce94-4f36-ae6c-3aa68d22d3e7?viewport_loc=693%2C944%2C2135%2C1211%2C0_0)
+[Class diagram](https://lucid.app/lucidchart/invitations/accept/inv_a6abb4ca-7614-49d2-8056-73158e0dee44?viewport_loc=-1056%2C-120%2C4839%2C2744%2C0_0)
+[State Diagram](https://lucid.app/lucidchart/invitations/accept/inv_11fcbdd6-a902-42c1-95e6-81074991b928?viewport_loc=20%2C23%2C1937%2C1098%2C0_0)
+
+
+# Libraries
+1. `truffle-assertions`: useful for testing reverts and events emitted
+2. `truffle-hd-wallet-provider`: used for signing transactions
+3. `@metamask/detect-provider`: tried using the metamask ethereum API for detecting providers, the approach used in the code is the old way. Managed it and then stopped working. I was also able to listen to events successfully using that. `ethereum.on('FarmerAdded, () => {})'`
+4. `web3`: for making JSON-RCP calls from the client to the network Metamask is connected to.
+5. `web3-provider-engine`: had to add this library to use its NonceTracker to keep deploying account's nonce synchronized with network.
+
+The `ethjs-abi` is deprecated, why does TruffleContract still depend on it?
 https://snyk.io/advisor/npm-package/ethjs-abi
 
-var ethJSABI = require("ethjs-abi");
-var BlockchainUtils = require("truffle-blockchain-utils");
-var Web3 = require("web3");
-@metamask/detect-provider as per recommendations from Metamask documentation
-I have a 'from' option for the rinkeby deployment config in truffle.js, change that to your own owner's address.
 
-# IPFS
-Contract address: 
-0x64E8F187a76B4441C1f3E8C042C3704ABc853f4F
-Owner: 0x55a9b04F1C75BB95D4fD11857B05F17540396Eaf
-
-Notes to self:
-Contract owner: 0xA95B5bdF5DD35B243457cc40c152a8D7fCA23006
-Farmer: 0xcD4b008789742eb41c0160c07384D8d03fA3A7B4
-Distributor: 0x4F58dfA687F1AA3553289ad6Bb37207507823c55
-Retailer: 0xC542929c903ff1ADdEFB8B58FDE35635962350Cd (Ganache User)
-Consumer: 0xaC5B9e69B4c1F174d0175524752704e68ce9c9c4
+## Rinkeby address
+**0xb76118FE7Bdd8B202D95bC2C3ad769d2061AdC6b**
 
 Versions:
 Truffle v5.1.65
@@ -31,7 +32,18 @@ npm 6.14.8
 web3 1.2.1
 Solc 0.7.1
 
-## Requirement 1: Implement Interfaces
-## Requirement 2: Build out AccessControl contract
-## Requirement 3: Build out Base Contract
-## Requirement 4: Build out Core Contract
+
+## Creating an Item
+Fill in the appropriate fields in Farm Details as well as any Product Notes you want to add in Product Details before harvesting
+
+## Getting info about an Item
+The Product and Farm Details fields can be used both to create an Item but will also be populated when clicking on fetchItemBufferOne/Two.
+
+## QUESTIONS
+Please see Questions.md ;)
+
+## Issues
+Can't seem to deploy without manually entering the mnemonic, process.env.MNEMONIC gives timeouts...
+Local: Encountering an exception at the very last action, consumer wants to purchase but getting an issue.
+Rinkeby: Also having some issues interacting with the contract once deployed to rinkeby...
+
